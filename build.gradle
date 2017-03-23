@@ -1,0 +1,28 @@
+group 'SpringEducation'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'war'
+
+sourceCompatibility = 1.8
+
+war {
+    baseName = 'springApp'
+    version = '0.1'
+}
+
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs 'libs'
+    }
+}
+dependencies {
+    compile 'org.springframework:spring-context:4.3.7.RELEASE'
+    compile 'org.springframework:spring-orm:4.3.7.RELEASE'
+    compile 'org.springframework:spring-webmvc:4.3.7.RELEASE'
+    compile 'org.hibernate:hibernate-core:5.2.9.Final'
+    compile 'javax.servlet:javax.servlet-api:3.1.0'
+    compile name: 'ojdbc6'
+}
