@@ -30,12 +30,6 @@ public class OperationStage implements Serializable{
     @Column(name = "operation_stage_code")
     private String code;
 
-    @ManyToMany
-    @JoinTable(name = "oper_type_oper_stage",
-            joinColumns = @JoinColumn(name = "operation_stage_id"),
-            inverseJoinColumns = @JoinColumn(name = "operation_type_id"))
-    private Set<OperationType> operationTypes;
-
     public int getId() {
         return id;
     }
