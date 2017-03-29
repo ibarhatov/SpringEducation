@@ -1,30 +1,38 @@
 package com.ibarhatov.springapp.config;
 
 import oracle.jdbc.pool.OracleDataSource;
-import org.hibernate.SessionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.orm.hibernate5.HibernateTemplate;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Properties;
 
 /**
- * Created by ibarkhatov on 23.03.2017.
+ * Created by ibarkhatov on 28.03.2017.
  */
-//    Config for Hibernate
-//@Configuration
+//    Config for SpringData
+@Configuration
 @EnableTransactionManagement
+@EnableJpaRepositories(basePackages = "com.ibarhatov.springapp")
 @ComponentScan("com.ibarhatov.springapp")
+@EnableScheduling
 @PropertySource("classpath:jdbc.properties")
-public class Config {
+public class SpringDataConfig{
 
     @Bean
     public DataSource dataSource(Environment env) throws SQLException, IOException {
@@ -48,14 +56,21 @@ public class Config {
         return sessionFactory;
     }
 
-
-    @Bean
-    public HibernateTransactionManager transactionManaget(SessionFactory sessionFactory) {
-        return new HibernateTransactionManager(sessionFactory);
+    @Bean("transactionManager")
+    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+        PlatformTransactionManager transactionManager = new JpaTransactionManager(entityManagerFactory);
+        return transactionManager;
     }
 
-    @Bean
-    public HibernateTemplate hibernateTemplate(SessionFactory sessionFactory) {
-        return new HibernateTemplate(sessionFactory);
+    @Bean("entityManagerFactory")
+    public EntityManagerFactory entityManagerFactory(DataSource dataSource) {
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+        factory.setDataSource(dataSource);
+        factory.setJpaVendorAdapter(vendorAdapter);
+        factory.setPackagesToScan("com.ibarhatov.springapp.model");
+        factory.afterPropertiesSet();
+        factory.setLoadTimeWeaver(new InstrumentationLoadTimeWeaver());
+        return factory.getObject();
     }
 }

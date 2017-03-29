@@ -1,10 +1,7 @@
-
 .gradle/
-gradle/
-libs/
-src/
-build.gradle
-gradlew
-gradlew.bat
-settings.gradle
-
+.idea/
+build/
+out/
+test/
+/src/main/resources/jdbc.properties
+/SpringApp.txt
